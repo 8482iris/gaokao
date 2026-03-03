@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>宁波大学高考倒计时推文展示</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            padding: 20px 15px;
+        }
+
+        header h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            line-height: 1.3;
+        }
+
+        header p {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .post {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .post-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .post-title {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            font-weight: 600;
+        }
+
+        .post-content {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .post-content h3 {
+            color: #667eea;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .post-content ul, .post-content ol {
+            margin-left: 18px;
+            margin-bottom: 12px;
+        }
+
+        .post-content li {
+            margin-bottom: 6px;
+        }
+
+        .post-content strong {
+            color: #333;
+        }
+
+        .post-content p {
+            margin-bottom: 12px;
+        }
+
+        .post-content .highlight {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+
+        .post-content .quote {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-left: 4px solid #667eea;
+            margin: 15px 0;
+            font-style: italic;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95em;
+        }
+
+        .post-content .tip {
+            background: #fff3cd;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #ffc107;
+            font-size: 0.95em;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            color: #666;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 0.85em;
+        }
+
+        .post-image {
+            width: 100%;
+            border-radius: 12px;
+            margin: 15px 0;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .image-placeholder {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 1em;
+        }
+
+        .countdown {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 10px 0;
+            box-shadow: 0 4px 10px rgba(255, 107, 107, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            color: white;
+            padding: 30px 15px;
+            margin-top: 30px;
+        }
+
+        footer p {
+            opacity: 0.9;
+            font-size: 1em;
+        }
+
+        .section-icon {
+            margin-right: 5px;
+        }
+
+        /* 平板适配 */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            header {
+                padding: 40px 20px;
+                margin-bottom: 40px;
+            }
+
+            header h1 {
+                font-size: 2.5em;
+            }
+
+            header p {
+                font-size: 1.2em;
+            }
+
+            .post {
+                padding: 30px;
+                margin-bottom: 30px;
+                border-radius: 20px;
+            }
+
+            .post-title {
+                font-size: 1.8em;
+            }
+
+            .post-content {
+                font-size: 1em;
+            }
+
+            .post-content h3 {
+                font-size: 1.3em;
+            }
+        }
+
+        /* 大屏适配 */
+        @media (min-width: 1024px) {
+            .container {
+                max-width: 900px;
+            }
+
+            .post:hover {
+                transform: translateY(-5px);
+                transition: transform 0.3s ease;
+            }
+        }
+
+        /* 小屏手机优化 */
+        @media (max-width: 375px) {
+            html {
+                font-size: 14px;
+            }
+
+            .post {
+                padding: 15px;
+            }
+
+            .post-title {
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>宁波大学高考倒计时推文展示</h1>
+            <p>5个精选选题，助力高考冲刺</p>
+        </header>
+
+        <div class="post">
+            <span class="post-number">推文一</span>
+            <h2 class="post-title">倒计时30天 | 宁大前辈亲授冲刺秘籍，助你圆梦！</h2>
+            <div class="post-content">
+                <p>30天，足以改变命运！</p>
+                <p>高考进入最后冲刺阶段，我们邀请了宁波大学的学长学姐们，为大家分享他们的备考经验和冲刺秘籍。这些来自"过来人"的建议，希望能为你的最后30天注入力量！</p>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/1c8e5f8f8f8f8f8f8f8f8f8f8f8f8f8f.jpg" alt="宁波大学校园" class="post-image" onerror="this.style.display='none'">
+
+                <h3><span class="section-icon">⏰</span>时间管理篇</h3>
+                <div class="quote">"最后30天，我每天用番茄工作法：25分钟专注学习，5分钟休息。这样既能保持高效，又不会过度疲劳。" —— 2021级计算机专业 王同学</div>
+                <p><strong>实用建议：</strong></p>
+                <ul>
+                    <li>制定每日计划，明确优先级</li>
+                    <li>利用碎片时间背单词、记公式</li>
+                    <li>每天留出1小时复习错题本</li>
+                </ul>
+
+                <h3><span class="section-icon">💪</span>心态调整篇</h3>
+                <div class="quote">"考前焦虑很正常，关键是要学会调节。我每天睡前听10分钟轻音乐，告诉自己：我已经尽力了。" —— 2022级中文系 李同学</div>
+                <p><strong>缓解焦虑小技巧：</strong></p>
+                <ul>
+                    <li>深呼吸法：吸气4秒，屏息2秒，呼气6秒</li>
+                    <li>每天写下3件值得感恩的小事</li>
+                    <li>与家人朋友分享你的感受</li>
+                </ul>
+
+                <h3><span class="section-icon">📚</span>复习策略篇</h3>
+                <div class="quote">"最后阶段，不要盲目刷题。回归课本，梳理知识框架，确保基础题不丢分。" —— 2021级数学系 张同学</div>
+                <p><strong>各科冲刺重点：</strong></p>
+                <ul>
+                    <li>语文：背诵古诗文，练习作文模板</li>
+                    <li>数学：整理错题，强化基础题型</li>
+                    <li>英语：坚持每天阅读，积累写作素材</li>
+                    <li>理综/文综：梳理知识体系，强化薄弱环节</li>
+                </ul>
+
+                <h3><span class="section-icon">🌙</span>生活作息篇</h3>
+                <div class="quote">"保证充足睡眠比熬夜刷题更重要。我每天11点前睡觉，6点起床，精神状态特别好。" —— 2022级物理系 陈同学</div>
+                <p><strong>健康生活建议：</strong></p>
+                <ul>
+                    <li>每天保证7-8小时睡眠</li>
+                    <li>三餐规律，营养均衡</li>
+                    <li>适当运动，每天散步20分钟</li>
+                </ul>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/library-night.jpg" alt="宁大图书馆夜景" class="post-image" onerror="this.style.display='none'">
+
+                <h3>互动环节</h3>
+                <p>你最想问学长学姐什么问题？评论区留言，我们会在下期推文中为你解答！</p>
+
+                <p><strong>结尾：</strong></p>
+                <p>星光不问赶路人，时光不负有心人。最后30天，全力以赴，我们在宁大等你！</p>
+            </div>
+            <div class="tags">
+                <span class="tag">#高考倒计时</span>
+                <span class="tag">#宁波大学</span>
+                <span class="tag">#学长学姐说</span>
+                <span class="tag">#备考秘籍</span>
+            </div>
+        </div>
+
+        <div class="post">
+            <span class="post-number">推文二</span>
+            <h2 class="post-title">倒计时25天 | 星光不问赶路人，时光不负有心人</h2>
+            <div class="post-content">
+                <div class="countdown">倒计时25天</div>
+
+                <div class="quote">"星光不问赶路人，时光不负有心人"</div>
+
+                <p>每一个挑灯夜读的夜晚，每一道认真思考的题目，每一次咬牙坚持的瞬间，都在为你的梦想铺路。</p>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/campus-sunset.jpg" alt="宁大校园夕阳" class="post-image" onerror="this.style.display='none'">
+
+                <div class="tip">
+                    <strong>今日小贴士：</strong>每天睡前花5分钟回顾当天收获，让进步看得见。哪怕只是记住了一个单词，弄懂了一个公式，都是值得庆祝的进步！
+                </div>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/library-interior.jpg" alt="宁大图书馆内部" class="post-image" onerror="this.style.display='none'">
+
+                <p>记住，你不是一个人在战斗。无数和你一样的学子，正在为梦想而努力。而宁波大学的学长学姐们，也在默默为你加油！</p>
+
+                <p>明天，继续前行！</p>
+            </div>
+            <div class="tags">
+                <span class="tag">#高考倒计时</span>
+                <span class="tag">#宁大陪你</span>
+                <span class="tag">#星光不问赶路人</span>
+            </div>
+        </div>
+
+        <div class="post">
+            <span class="post-number">推文三</span>
+            <h2 class="post-title">距离高考还有28天 | 宁大计算机科学与技术等你来！</h2>
+            <div class="post-content">
+                <div class="countdown">距离高考还有28天</div>
+
+                <p>今天，带你了解宁波大学的王牌专业之一——计算机科学与技术！</p>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/computer-building.jpg" alt="宁大计算机学院" class="post-image" onerror="this.style.display='none'">
+
+                <h3><span class="section-icon">📚</span>专业特色</h3>
+                <ul>
+                    <li>国家级一流本科专业建设点</li>
+                    <li>拥有浙江省大数据与软件工程重点实验室</li>
+                    <li>与阿里巴巴、网易等知名企业深度合作</li>
+                    <li>开设人工智能、大数据、网络安全等前沿方向</li>
+                </ul>
+
+                <h3><span class="section-icon">💼</span>就业前景</h3>
+                <ul>
+                    <li>毕业生平均起薪12K+</li>
+                    <li>就业率98%，其中30%进入BAT等互联网大厂</li>
+                    <li>升学率35%，多名学生保研至清华、北大、浙大</li>
+                    <li>主要就业方向：软件开发、数据分析、人工智能、网络安全</li>
+                </ul>
+
+                <h3><span class="section-icon">🎓</span>学长学姐说</h3>
+                <div class="quote">"选择计科，选择未来无限可能！在这里，我不仅学到了扎实的编程技能，还参与了多个实际项目，为就业打下了坚实基础。" —— 2021级 张同学</div>
+                <div class="quote">"宁大的计科专业师资力量很强，老师们不仅学术水平高，还非常关心学生的成长。大三时，我在老师的推荐下获得了阿里实习机会。" —— 2022级 李同学</div>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/students-coding.jpg" alt="宁大学生编程学习" class="post-image" onerror="this.style.display='none'">
+
+                <h3><span class="section-icon">📊</span>招生信息</h3>
+                <ul>
+                    <li>2023年浙江省录取分数线：620分</li>
+                    <li>2024年计划招生：120人</li>
+                    <li>学费：5300元/年</li>
+                </ul>
+
+                <h3><span class="section-icon">🔥</span>为什么选择宁大计科？</h3>
+                <ol>
+                    <li>实践机会多：每年举办编程大赛、黑客松等活动</li>
+                    <li>就业资源丰富：与100+企业建立合作关系</li>
+                    <li>学习氛围浓厚：图书馆、实验室24小时开放</li>
+                    <li>校园环境优美：位于美丽的海滨城市宁波</li>
+                </ol>
+
+                <h3>互动环节</h3>
+                <p>你对计算机专业有什么想了解的？评论区留言，我们为你解答！</p>
+            </div>
+            <div class="tags">
+                <span class="tag">#高考倒计时</span>
+                <span class="tag">#宁大专业</span>
+                <span class="tag">#计算机科学与技术</span>
+                <span class="tag">#未来可期</span>
+            </div>
+        </div>
+
+        <div class="post">
+            <span class="post-number">推文四</span>
+            <h2 class="post-title">高考倒计时 | 宁大食堂美食图鉴，努力学习犒劳自己！</h2>
+            <div class="post-content">
+                <div class="countdown">高考倒计时</div>
+
+                <p>美食是最好的慰藉！今天，带你走进宁波大学的食堂，看看未来的你将享受到怎样的美食盛宴！</p>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/canteen-breakfast.jpg" alt="宁大食堂早餐" class="post-image" onerror="this.style.display='none'">
+
+                <h3><span class="section-icon">🌅</span>早餐篇</h3>
+                <p>热气腾腾的包子豆浆，开启元气满满的一天！</p>
+                <ul>
+                    <li>鲜肉包：皮薄馅大，一口咬下去汤汁四溢</li>
+                    <li>豆浆：现磨豆浆，浓郁香醇，还有红豆、绿豆等多种口味</li>
+                    <li>粥品：皮蛋瘦肉粥、小米粥、南瓜粥，营养又养胃</li>
+                    <li>鸡蛋：白煮蛋、茶叶蛋、煎蛋，满足不同口味</li>
+                </ul>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/canteen-lunch.jpg" alt="宁大食堂午餐" class="post-image" onerror="this.style.display='none'">
+
+                <h3><span class="section-icon">🍜</span>午餐篇</h3>
+                <p>中午吃什么？宁大食堂给你N种选择！</p>
+                <ul>
+                    <li>一楼：家常菜窗口，红烧肉、糖醋排骨、宫保鸡丁，价格8-15元</li>
+                    <li>二楼：特色菜窗口，川菜、粤菜、湘菜，满足各地口味</li>
+                    <li>三楼：清真餐厅，牛肉拉面、大盘鸡、手抓饭</li>
+                    <li>四楼：自助餐厅，20元畅吃，菜品丰富</li>
+                </ul>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/canteen-dinner.jpg" alt="宁大食堂晚餐" class="post-image" onerror="this.style.display='none'">
+
+                <h3><span class="section-icon">🌙</span>晚餐篇</h3>
+                <p>晚餐要吃好，但不能吃太饱！</p>
+                <ul>
+                    <li>轻食窗口：沙拉、三明治、水果拼盘，健康又美味</li>
+                    <li>地方特色：宁波汤圆、绍兴臭豆腐、杭州片儿川</li>
+                    <li>夜宵小食：烧烤、炸鸡、奶茶，偶尔犒劳自己</li>
+                </ul>
+
+                <h3><span class="section-icon">🏆</span>食堂特色</h3>
+                <p>宁大共有5个食堂，每个都有自己的特色：</p>
+                <ul>
+                    <li><strong>第一食堂</strong>：主打家常菜，价格实惠，深受学生喜爱</li>
+                    <li><strong>第二食堂</strong>：装修现代，环境优雅，适合和朋友聚餐</li>
+                    <li><strong>第三食堂</strong>：清真餐厅，尊重不同饮食习惯</li>
+                    <li><strong>第四食堂</strong>：自助餐厅，选择丰富，性价比高</li>
+                    <li><strong>第五食堂</strong>：创新菜品，定期推出新菜式</li>
+                </ul>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/canteen-5.jpg" alt="宁大第五食堂" class="post-image" onerror="this.style.display='none'">
+
+                <h3><span class="section-icon">💡</span>营养搭配建议</h3>
+                <ul>
+                    <li>早餐：蛋白质+碳水化合物+维生素</li>
+                    <li>午餐：主食+肉类+蔬菜</li>
+                    <li>晚餐：清淡为主，多吃蔬菜水果</li>
+                </ul>
+
+                <h3>互动环节</h3>
+                <p>你最想在宁大食堂吃什么菜？评论区许愿，说不定高考后就能实现！</p>
+
+                <p><strong>结尾：</strong></p>
+                <p>努力学习，未来在宁大享受美食！我们在宁大等你！</p>
+            </div>
+            <div class="tags">
+                <span class="tag">#高考倒计时</span>
+                <span class="tag">#宁大美食</span>
+                <span class="tag">#食堂打卡</span>
+                <span class="tag">#未来可期</span>
+            </div>
+        </div>
+
+        <div class="post">
+            <span class="post-number">推文五</span>
+            <h2 class="post-title">倒计时22天 | 宁大钟楼，等你来解锁！</h2>
+            <div class="post-content">
+                <div class="countdown">倒计时22天</div>
+
+                <p>今天，带你解锁宁波大学的标志性建筑——钟楼！</p>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/bell-tower.jpg" alt="宁大钟楼" class="post-image" onerror="this.style.display='none'">
+
+                <h3><span class="section-icon">📍</span>位置</h3>
+                <p>主校区中心广场，宁大的地理中心，也是校园内最醒目的建筑之一。</p>
+
+                <h3><span class="section-icon">🕰️</span>历史</h3>
+                <p>建于1986年，见证了宁波大学38年的发展历程。钟楼高48米，是宁大的精神象征，也是无数宁大学子的青春记忆。</p>
+
+                <h3><span class="section-icon">📸</span>打卡攻略</h3>
+                <p><strong>最佳时间：</strong>黄昏时分，夕阳西下时，钟楼与夕阳同框，美不胜收。</p>
+                <p><strong>推荐角度：</strong></p>
+                <ul>
+                    <li>从广场正中拍摄，钟楼与蓝天白云构成完美画面</li>
+                    <li>从侧面拍摄，展现钟楼的雄伟身姿</li>
+                    <li>夜晚拍摄，钟楼灯光璀璨，别有一番风味</li>
+                </ul>
+                <p><strong>拍照技巧：</strong></p>
+                <ul>
+                    <li>使用广角镜头，可以拍下钟楼全貌</li>
+                    <li>逆光拍摄，可以拍出剪影效果</li>
+                    <li>夜晚拍摄，建议使用三脚架，避免模糊</li>
+                </ul>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/bell-tower-sunset.jpg" alt="宁大钟楼黄昏" class="post-image" onerror="this.style.display='none'">
+
+                <h3><span class="section-icon">💬</span>学长学姐说</h3>
+                <div class="quote">"每次路过钟楼，都提醒自己珍惜时光。大学四年，我在这里度过了最美好的青春。" —— 2022级 李同学</div>
+                <div class="quote">"钟楼是宁大的地标，也是我们的精神寄托。毕业时，我和室友们在钟楼前合影，那是我们最珍贵的回忆。" —— 2021级 王同学</div>
+                <div class="quote">"第一次来宁大报到，看到钟楼的那一刻，我就知道，这里将是我的第二个家。" —— 2023级 张同学</div>
+
+                <h3><span class="section-icon">🎯</span>打卡任务</h3>
+                <ol>
+                    <li>在钟楼前拍一张打卡照</li>
+                    <li>录制一段钟楼的视频</li>
+                    <li>写下你对未来的期许，贴在钟楼旁的许愿墙上</li>
+                </ol>
+
+                <img src="https://www.nbu.edu.cn/images/2022-09/bell-tower-night.jpg" alt="宁大钟楼夜景" class="post-image" onerror="this.style.display='none'">
+
+                <h3>互动环节</h3>
+                <p>你最想在宁大哪里打卡？评论区告诉我们，下期为你揭秘！</p>
+            </div>
+            <div class="tags">
+                <span class="tag">#高考倒计时</span>
+                <span class="tag">#宁大打卡</span>
+                <span class="tag">#钟楼</span>
+                <span class="tag">#青春记忆</span>
+            </div>
+        </div>
+
+        <footer>
+            <p>宁波大学 · 助力高考 · 筑梦未来</p>
+        </footer>
+    </div>
+</body>
+</html>
